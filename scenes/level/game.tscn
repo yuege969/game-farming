@@ -1,10 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://bf0yuue48pk6v"]
+[gd_scene format=3 uid="uid://bf0yuue48pk6v"]
 
 [ext_resource type="PackedScene" uid="uid://ca106qafnt25o" path="res://scenes/player/player.tscn" id="1_e6yxx"]
 
-[node name="Game" type="Node2D"]
+[node name="Game" type="Node2D" unique_id=542642658]
 
-[node name="Objects" type="Node2D" parent="."]
+[node name="Objects" type="Node2D" parent="." unique_id=118445642]
 y_sort_enabled = true
 
-[node name="Player" parent="Objects" instance=ExtResource("1_e6yxx")]
+[node name="Player" parent="Objects" unique_id=636630100 instance=ExtResource("1_e6yxx")]
+position = Vector2(184, 107)
