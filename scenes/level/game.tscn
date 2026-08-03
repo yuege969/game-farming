@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://bf0yuue48pk6v"]
+
+[ext_resource type="PackedScene" uid="uid://ca106qafnt25o" path="res://scenes/player/player.tscn" id="1_e6yxx"]
+
+[node name="Game" type="Node2D"]
+
+[node name="Objects" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="Objects" instance=ExtResource("1_e6yxx")]
