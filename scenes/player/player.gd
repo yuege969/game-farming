@@ -8,7 +8,17 @@ var last_direction: Vector2 = Vector2.DOWN
 var current_state: String = "idle"
 
 func _physics_process(_delta: float) -> void:
-	var direction = Input.get_vector("left", "right", "up", "down")
+	var raw_direction = Input.get_vector("left", "right", "up", "down")
+
+	# Normalize and round direction for 8-directional blend space
+	var direction: Vector2
+	if raw_direction != Vector2.ZERO:
+		raw_direction = raw_direction.normalized()
+		direction.x = round(raw_direction.x)
+		direction.y = round(raw_direction.y)
+		# direction now only contains -1, 0, or 1 for each component
+	else:
+		direction = Vector2.ZERO
 
 	# Update blend positions for 8-directional animation
 	if direction != Vector2.ZERO:

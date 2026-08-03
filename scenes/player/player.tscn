@@ -663,6 +663,9 @@ animation = &"idle_right"
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_kvlxm"]
 animation = &"idle_right"
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_uf5tr"]
+animation = &"idle_down"
+
 [sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_8afob"]
 blend_point_0/node = SubResource("AnimationNodeAnimation_h17s1")
 blend_point_0/pos = Vector2(0, 1)
@@ -688,6 +691,9 @@ blend_point_6/name = &"idle_right 2"
 blend_point_7/node = SubResource("AnimationNodeAnimation_kvlxm")
 blend_point_7/pos = Vector2(1, -1)
 blend_point_7/name = &"idle_right 3"
+blend_point_8/node = SubResource("AnimationNodeAnimation_uf5tr")
+blend_point_8/pos = Vector2(0, 0)
+blend_point_8/name = &"idle_down 2"
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dovo2"]
 animation = &"move_down"
