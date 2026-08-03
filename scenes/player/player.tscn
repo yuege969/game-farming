@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://c3vhtmk41jomm" path="res://scenes/player/player.gd" id="1_dovo2"]
 [ext_resource type="Texture2D" uid="uid://dpfxibevth7y" path="res://graphics/characters/player_animations.png" id="2_yewv4"]
+
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yewv4"]
 radius = 5.0
 height = 10.0
@@ -748,10 +749,10 @@ blend_point_8/name = &"move_down 2"
 advance_mode = 2
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_lgqa7"]
-advance_mode = 2
+advance_mode = 0
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_8ydkj"]
-advance_mode = 2
+advance_mode = 0
 
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_fm80t"]
 states/Start/position = Vector2(134.5, 112.75)
