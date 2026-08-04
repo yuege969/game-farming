@@ -996,3 +996,5 @@ parameters/MoveStateMachine/move/blend_position = Vector2(0, 0)
 parameters/OneShot/active = false
 parameters/OneShot/internal_active = false
 parameters/OneShot/request = 0
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1993177679]
