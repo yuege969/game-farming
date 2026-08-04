@@ -973,6 +973,7 @@ node_connections = [&"output", 0, &"OneShot", &"OneShot", 0, &"MoveStateMachine"
 collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_dovo2")
+speed = 50.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1508202970]
 texture = ExtResource("2_yewv4")
