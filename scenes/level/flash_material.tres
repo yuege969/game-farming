@@ -1,7 +1,8 @@
-[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+[gd_resource type="ShaderMaterial" format=3 uid="uid://bpiccw4vywwq1"]
 
-[ext_resource type="Shader" path="res://scenes/level/flash.gdshader" id="1"]
+[ext_resource type="Shader" uid="uid://clvb6msuod1sm" path="res://scenes/level/flash.gdshader" id="1"]
 
 [resource]
+resource_local_to_scene = true
 shader = ExtResource("1")
 shader_parameter/flash_intensity = 0.0
