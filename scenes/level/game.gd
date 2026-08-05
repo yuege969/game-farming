@@ -2,7 +2,6 @@ extends Node2D
 
 const PlantScene := preload("res://scenes/level/plant.tscn")
 
-@onready var _layers: Node2D = $Layers
 @onready var _grass_layer: TileMapLayer = $Layers/GrassLayer
 @onready var _soil_layer: TileMapLayer = $Layers/SoilLayer
 @onready var _water_layer: TileMapLayer = $Layers/WaterLayer
