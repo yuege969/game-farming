@@ -20,7 +20,7 @@ var _growth_timer: Timer
 func setup(crop_name: String) -> void:
 	crop_type = crop_name
 
-	var texture_path := TEXTURES.get(crop_name, "")
+	var texture_path: String = TEXTURES.get(crop_name, "")
 	if texture_path.is_empty():
 		push_error("Unknown crop type: %s" % crop_name)
 		return
