@@ -9,8 +9,6 @@ const TEXTURES := {
 const GROWTH_INTERVAL := 5.0
 const MAX_STAGE := 3
 
-@onready var _sprite: Sprite2D = $Sprite2D
-
 var crop_type: String = ""
 var growth_stage: int = 0
 var is_watered: bool = false
@@ -30,9 +28,10 @@ func setup(crop_name: String) -> void:
 		push_error("Failed to load texture: %s" % texture_path)
 		return
 
-	_sprite.texture = texture
-	_sprite.hframes = 4
-	_sprite.frame = 0
+	var sprite: Sprite2D = $Sprite2D
+	sprite.texture = texture
+	sprite.hframes = 4
+	sprite.frame = 0
 	growth_stage = 0
 
 
@@ -55,7 +54,7 @@ func _start_growth_timer() -> void:
 
 func _on_growth_tick() -> void:
 	growth_stage += 1
-	_sprite.frame = growth_stage
+	$Sprite2D.frame = growth_stage
 
 	if growth_stage >= MAX_STAGE:
 		_growth_timer.stop()

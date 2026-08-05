@@ -38,9 +38,9 @@ func _handle_plant(seed_name: String, target_world_pos: Vector2) -> void:
 		return
 
 	var plant: StaticBody2D = PlantScene.instantiate()
-	plant.setup(seed_name)
 	plant.position = _tile_to_world(coords)
 	_objects.add_child(plant)
+	plant.setup(seed_name)
 
 func _handle_axe(target_world_pos: Vector2) -> void:
 	var space_state := get_world_2d().direct_space_state
