@@ -8,6 +8,7 @@ size = Vector2(14, 18)
 
 [node name="Tree" type="StaticBody2D" unique_id=555376877]
 y_sort_enabled = true
+collision_mask = 2
 script = ExtResource("1_gk3pd")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=262468575]
