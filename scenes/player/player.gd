@@ -4,6 +4,10 @@ extends CharacterBody2D
 ## game.gd listens and performs the actual world manipulation.
 signal tool_action(tool_name: String, target_world_pos: Vector2)
 
+## Emitted when player presses the plant key.
+## game.gd listens and spawns a Plant at the target tile.
+signal plant_action(seed_name: String, target_world_pos: Vector2)
+
 @export var speed: float = 100.0
 @export var tile_offset: int = 16
 @export var tile_offset_y: int = 0
@@ -15,6 +19,10 @@ var current_state: String = "idle"
 
 var tools: Array[String] = ["axe", "hoe", "water"]
 var current_tool_idx: int = 1  # default to hoe
+
+var seeds: Array[String] = ["corn", "pumpkin", "tomatoes"]
+var current_seed_idx: int = 0
+
 var is_using_tool: bool = false
 var _one_shot_was_active: bool = false
 
@@ -35,6 +43,14 @@ func _physics_process(_delta: float) -> void:
 	# --- Tool action input ---
 	if Input.is_action_just_pressed("action") and not is_using_tool:
 		_start_tool_action()
+
+	# --- Seed switching (always available) ---
+	if Input.is_action_just_pressed("seed_toggle"):
+		current_seed_idx = (current_seed_idx + 1) % seeds.size()
+
+	# --- Plant action (always available) ---
+	if Input.is_action_just_pressed("plant"):
+		plant_action.emit(seeds[current_seed_idx], _tool_target_pos())
 
 	# --- Movement (locked during tool use) ---
 	if is_using_tool:
