@@ -1,9 +1,10 @@
 extends CharacterBody2D
 
 @export var speed: float = 100.0
+@export var tile_offset: int = 16
+@export var tile_offset_y: int = 0
 
 @onready var animation_tree: AnimationTree = $AnimationTree
-@onready var tile_indicator: Sprite2D = $TileIndicator
 
 var last_direction: Vector2 = Vector2.DOWN
 var current_state: String = "idle"
@@ -13,12 +14,9 @@ var current_tool_idx: int = 1  # default to hoe
 var is_using_tool: bool = false
 var _one_shot_was_active: bool = false
 
-
 func _ready() -> void:
 	# Initialize ToolStateMachine to default tool (hoe)
 	_switch_tool()
-	# Create tile indicator highlight texture
-	_create_indicator_texture()
 
 func _physics_process(_delta: float) -> void:
 	# --- Tool switching input (only when not using a tool) ---
@@ -78,17 +76,12 @@ func _physics_process(_delta: float) -> void:
 
 	move_and_slide()
 
-	# Update tile indicator position every frame
-	_update_tile_indicator()
-
-
 func _switch_tool() -> void:
 	var tool_name = tools[current_tool_idx]
 	var tool_blend_path = "parameters/ToolStateMachine/%s/blend_position" % tool_name
 	animation_tree.set(tool_blend_path, last_direction)
 	var tool_playback: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/ToolStateMachine/playback")
 	tool_playback.travel(tool_name)
-
 
 func _start_tool_action() -> void:
 	var tool_name = tools[current_tool_idx]
@@ -103,20 +96,18 @@ func _start_tool_action() -> void:
 	_one_shot_was_active = false
 	is_using_tool = true
 
-
 func axe_use() -> void:
 	# Placeholder — called by axe animation track at 0.4s
 	pass
 
-
 func _get_target_coords() -> Vector2i:
 	var layers = get_tree().current_scene.get_node("Layers")
 	var soil_layer: TileMapLayer = layers.get_node("SoliLayer")
-	# Snap player to the tile they're standing on, then offset by facing direction
-	var player_local: Vector2 = soil_layer.to_local(global_position)
+	# Offset world position (facing direction + Y pivot), then snap to tile
+	var adjusted_pos: Vector2 = global_position + last_direction * tile_offset + Vector2(0, tile_offset_y)
+	var player_local: Vector2 = soil_layer.to_local(adjusted_pos)
 	var player_coords: Vector2i = soil_layer.local_to_map(player_local)
-	return player_coords + Vector2i(int(last_direction.x), int(last_direction.y))
-
+	return player_coords
 
 func hoe_use() -> void:
 	var layers = get_tree().current_scene.get_node("Layers")
@@ -134,35 +125,9 @@ func hoe_use() -> void:
 	if soil_layer.get_cell_source_id(target_coords) != -1:
 		return
 
-	# Don't till tiles adjacent to water
-	var neighbors: Array[Vector2i] = [
-		target_coords + Vector2i(0, -1),
-		target_coords + Vector2i(0, 1),
-		target_coords + Vector2i(-1, 0),
-		target_coords + Vector2i(1, 0),
-	]
-	for neighbor in neighbors:
-		if water_layer.get_cell_source_id(neighbor) != -1:
-			return
+	# Don't till tiles that intersect with water
+	if water_layer.get_cell_source_id(target_coords) != -1:
+		return
 
 	# Place soil tile with terrain auto-connect (terrain_set=0, terrain=0)
 	soil_layer.set_cells_terrain_connect([target_coords], 0, 0)
-
-
-func _create_indicator_texture() -> void:
-	var size := 16
-	var img := Image.create(size, size, false, Image.FORMAT_RGBA8)
-	img.fill(Color(1.0, 1.0, 1.0, 0.25))
-	for i in range(size):
-		img.set_pixel(i, 0, Color(1.0, 1.0, 1.0, 0.6))
-		img.set_pixel(i, size - 1, Color(1.0, 1.0, 1.0, 0.6))
-		img.set_pixel(0, i, Color(1.0, 1.0, 1.0, 0.6))
-		img.set_pixel(size - 1, i, Color(1.0, 1.0, 1.0, 0.6))
-	tile_indicator.texture = ImageTexture.create_from_image(img)
-
-
-func _update_tile_indicator() -> void:
-	var layers = get_tree().current_scene.get_node("Layers")
-	var soil_layer: TileMapLayer = layers.get_node("SoliLayer")
-	var target_coords := _get_target_coords()
-	tile_indicator.global_position = soil_layer.to_global(soil_layer.map_to_local(target_coords))

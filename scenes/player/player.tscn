@@ -1030,6 +1030,8 @@ collision_layer = 2
 collision_mask = 5
 script = ExtResource("1_dovo2")
 speed = 50.0
+tile_offset = 14
+tile_offset_y = 2
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1508202970]
 texture = ExtResource("2_yewv4")
@@ -1056,6 +1058,5 @@ parameters/OneShot/request = 0
 
 [node name="TileIndicator" type="Sprite2D" parent="." unique_id=2105061823]
 top_level = true
-centered = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1993177679]
