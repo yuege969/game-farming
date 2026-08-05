@@ -2,6 +2,10 @@ extends Node2D
 
 const PlantScene := preload("res://scenes/level/plant.tscn")
 
+## Offset applied when converting tile coords to world position,
+## so placed objects visually align with the soil tile sprite.
+const TILE_WORLD_OFFSET := Vector2(8, -2)
+
 @onready var _grass_layer: TileMapLayer = $Layers/GrassLayer
 @onready var _soil_layer: TileMapLayer = $Layers/SoilLayer
 @onready var _water_layer: TileMapLayer = $Layers/WaterLayer
@@ -37,7 +41,7 @@ func _handle_plant(seed_name: String, target_world_pos: Vector2) -> void:
 		return
 
 	var plant: StaticBody2D = PlantScene.instantiate()
-	plant.position = _tile_to_world(coords) + Vector2(8, -2)
+	plant.position = _tile_to_world(coords) + TILE_WORLD_OFFSET
 	_objects.add_child(plant)
 	plant.setup(seed_name)
 
@@ -110,7 +114,9 @@ func _tile_to_world(coords: Vector2i) -> Vector2:
 func _plant_at_tile(coords: Vector2i) -> Node:
 	for child in _objects.get_children():
 		if child.has_method("setup") and child.has_method("water"):
-			var child_coords := _world_to_tile(child.global_position)
+			# Subtract the visual offset so tile lookup matches the
+			# original placement tile (offset is purely visual).
+			var child_coords := _world_to_tile(child.global_position - TILE_WORLD_OFFSET)
 			if child_coords == coords:
 				return child
 	return null
