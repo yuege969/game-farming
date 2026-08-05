@@ -851,6 +851,7 @@ sources/0 = SubResource("TileSetAtlasSource_3ny2s")
 
 [node name="Game" type="Node2D" unique_id=542642658]
 script = ExtResource("1_3ny2s")
+tile_world_offset = Vector2(0, -12)
 
 [node name="Layers" type="Node2D" parent="." unique_id=658813167]
 
