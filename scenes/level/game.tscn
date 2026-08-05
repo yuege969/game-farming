@@ -1,5 +1,6 @@
 [gd_scene format=4 uid="uid://bf0yuue48pk6v"]
 
+[ext_resource type="Script" uid="uid://6xm2pmgvw1r5" path="res://scenes/level/game.gd" id="1_3ny2s"]
 [ext_resource type="PackedScene" uid="uid://ca106qafnt25o" path="res://scenes/player/player.tscn" id="1_e6yxx"]
 [ext_resource type="Texture2D" uid="uid://baw527j36pxgi" path="res://graphics/tilesets/grass.png" id="1_pl0c8"]
 [ext_resource type="Texture2D" uid="uid://b134tjp5ngghx" path="res://graphics/tilesets/water.png" id="1_qhoho"]
@@ -849,6 +850,7 @@ texture = ExtResource("5_f2w0s")
 sources/0 = SubResource("TileSetAtlasSource_3ny2s")
 
 [node name="Game" type="Node2D" unique_id=542642658]
+script = ExtResource("1_3ny2s")
 
 [node name="Layers" type="Node2D" parent="." unique_id=658813167]
 

@@ -1,5 +1,9 @@
 extends CharacterBody2D
 
+## Emitted when a tool animation fires its action frame.
+## game.gd listens and performs the actual world manipulation.
+signal tool_action(tool_name: String, target_world_pos: Vector2)
+
 @export var speed: float = 100.0
 @export var tile_offset: int = 16
 @export var tile_offset_y: int = 0
@@ -96,76 +100,17 @@ func _start_tool_action() -> void:
 	_one_shot_was_active = false
 	is_using_tool = true
 
+func _tool_target_pos() -> Vector2:
+	return global_position + last_direction * tile_offset + Vector2(0, tile_offset_y)
+
+## Called by animation method track — emits signal for game.gd to handle
 func axe_use() -> void:
-	# Get target world position in front of the player
-	var adjusted_pos: Vector2 = global_position + last_direction * tile_offset + Vector2(0, tile_offset_y)
+	tool_action.emit("axe", _tool_target_pos())
 
-	# Query physics space for bodies at the target position
-	var space_state := get_world_2d().direct_space_state
-	var query := PhysicsPointQueryParameters2D.new()
-	query.position = adjusted_pos
-	query.collision_mask = 1  # Tree is on default collision layer 1
-	query.collide_with_bodies = true
-	query.collide_with_areas = false
-
-	var results := space_state.intersect_point(query)
-
-	for result in results:
-		var body: Node2D = result.collider
-		if body.is_in_group("Trees"):
-			body.flash()
-			break
-
+## Called by animation method track — emits signal for game.gd to handle
 func water_use() -> void:
-	var layers = get_tree().current_scene.get_node("Layers")
-	var soil_layer: TileMapLayer = layers.get_node("SoilLayer")
-	var water_soil_layer: TileMapLayer = layers.get_node("SoilWaterLayer")
+	tool_action.emit("water", _tool_target_pos())
 
-	var target_coords := _get_target_coords()
-
-	# Only water if soil exists at the target tile
-	if soil_layer.get_cell_source_id(target_coords) == -1:
-		return
-
-	# Don't double-water — soil_water already present
-	if water_soil_layer.get_cell_source_id(target_coords) != -1:
-		return
-
-	# Erase the soil tile
-	soil_layer.erase_cell(target_coords)
-
-	# Place soil_water tile with random atlas x (0, 1, or 2) for visual variety
-	var atlas_x := randi() % 3
-	water_soil_layer.set_cell(target_coords, 0, Vector2i(atlas_x, 0))
-
-func _get_target_coords() -> Vector2i:
-	var layers = get_tree().current_scene.get_node("Layers")
-	var soil_layer: TileMapLayer = layers.get_node("SoilLayer")
-	# Offset world position (facing direction + Y pivot), then snap to tile
-	var adjusted_pos: Vector2 = global_position + last_direction * tile_offset + Vector2(0, tile_offset_y)
-	var player_local: Vector2 = soil_layer.to_local(adjusted_pos)
-	var player_coords: Vector2i = soil_layer.local_to_map(player_local)
-	return player_coords
-
+## Called by animation method track — emits signal for game.gd to handle
 func hoe_use() -> void:
-	var layers = get_tree().current_scene.get_node("Layers")
-	var grass_layer: TileMapLayer = layers.get_node("GrassLayer")
-	var soil_layer: TileMapLayer = layers.get_node("SoilLayer")
-	var water_layer: TileMapLayer = layers.get_node("WaterLayer")
-
-	var target_coords := _get_target_coords()
-
-	# Only till if grass exists at the target tile
-	if grass_layer.get_cell_tile_data(target_coords) == null:
-		return
-
-	# Don't double-till — soil already present
-	if soil_layer.get_cell_source_id(target_coords) != -1:
-		return
-
-	# Don't till tiles that intersect with water
-	if water_layer.get_cell_source_id(target_coords) != -1:
-		return
-
-	# Place soil tile with terrain auto-connect (terrain_set=0, terrain=0)
-	soil_layer.set_cells_terrain_connect([target_coords], 0, 0)
+	tool_action.emit("hoe", _tool_target_pos())
