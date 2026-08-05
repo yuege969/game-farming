@@ -100,9 +100,31 @@ func axe_use() -> void:
 	# Placeholder — called by axe animation track at 0.4s
 	pass
 
+func water_use() -> void:
+	var layers = get_tree().current_scene.get_node("Layers")
+	var soil_layer: TileMapLayer = layers.get_node("SoilLayer")
+	var water_soil_layer: TileMapLayer = layers.get_node("SoilWaterLayer")
+
+	var target_coords := _get_target_coords()
+
+	# Only water if soil exists at the target tile
+	if soil_layer.get_cell_source_id(target_coords) == -1:
+		return
+
+	# Don't double-water — soil_water already present
+	if water_soil_layer.get_cell_source_id(target_coords) != -1:
+		return
+
+	# Erase the soil tile
+	soil_layer.erase_cell(target_coords)
+
+	# Place soil_water tile with random atlas x (0, 1, or 2) for visual variety
+	var atlas_x := randi() % 3
+	water_soil_layer.set_cell(target_coords, 0, Vector2i(atlas_x, 0))
+
 func _get_target_coords() -> Vector2i:
 	var layers = get_tree().current_scene.get_node("Layers")
-	var soil_layer: TileMapLayer = layers.get_node("SoliLayer")
+	var soil_layer: TileMapLayer = layers.get_node("SoilLayer")
 	# Offset world position (facing direction + Y pivot), then snap to tile
 	var adjusted_pos: Vector2 = global_position + last_direction * tile_offset + Vector2(0, tile_offset_y)
 	var player_local: Vector2 = soil_layer.to_local(adjusted_pos)
@@ -112,7 +134,7 @@ func _get_target_coords() -> Vector2i:
 func hoe_use() -> void:
 	var layers = get_tree().current_scene.get_node("Layers")
 	var grass_layer: TileMapLayer = layers.get_node("GrassLayer")
-	var soil_layer: TileMapLayer = layers.get_node("SoliLayer")
+	var soil_layer: TileMapLayer = layers.get_node("SoilLayer")
 	var water_layer: TileMapLayer = layers.get_node("WaterLayer")
 
 	var target_coords := _get_target_coords()
