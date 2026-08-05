@@ -97,8 +97,31 @@ func _start_tool_action() -> void:
 	is_using_tool = true
 
 func axe_use() -> void:
-	# Placeholder — called by axe animation track at 0.4s
-	pass
+	# Get target world position in front of the player
+	var adjusted_pos: Vector2 = global_position + last_direction * tile_offset + Vector2(0, tile_offset_y)
+
+	# Query physics space for bodies at the target position
+	var space_state := get_world_2d().direct_space_state
+	var query := PhysicsPointQueryParameters2D.new()
+	query.position = adjusted_pos
+	query.collision_mask = 1  # Tree is on default collision layer 1
+	query.collide_with_bodies = true
+	query.collide_with_areas = false
+
+	var results := space_state.intersect_point(query)
+
+	for result in results:
+		var body: Node2D = result.collider
+		if body.is_in_group("Trees"):
+			_flash_tree(body)
+			break
+
+
+func _flash_tree(tree: StaticBody2D) -> void:
+	var sprite: Sprite2D = tree.get_node("Sprite2D")
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color(1, 1, 1, 0.2), 0.15)
+	tween.tween_property(sprite, "modulate", Color(1, 1, 1, 1.0), 0.15)
 
 func water_use() -> void:
 	var layers = get_tree().current_scene.get_node("Layers")
