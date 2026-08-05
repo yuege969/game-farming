@@ -1,11 +1,22 @@
 extends StaticBody2D
 
+@onready var sprite: Sprite2D = $Sprite2D
 
-# Called when the node enters the scene tree for the first time.
+
 func _ready() -> void:
-	$Sprite2D.frame = [0,1].pick_random()
+	sprite.frame = [0, 1].pick_random()
+	# Duplicate material so each tree has its own independent flash state
+	sprite.material = sprite.material.duplicate()
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(_delta: float) -> void:
-	pass
+func flash() -> void:
+	var mat: ShaderMaterial = sprite.material
+	var tween := create_tween()
+	tween.tween_method(
+		func(v: float): mat.set_shader_parameter("flash_intensity", v),
+		0.0, 1.0, 0.08
+	)
+	tween.tween_method(
+		func(v: float): mat.set_shader_parameter("flash_intensity", v),
+		1.0, 0.0, 0.12
+	)

@@ -113,15 +113,8 @@ func axe_use() -> void:
 	for result in results:
 		var body: Node2D = result.collider
 		if body.is_in_group("Trees"):
-			_flash_tree(body)
+			body.flash()
 			break
-
-
-func _flash_tree(tree: StaticBody2D) -> void:
-	var sprite: Sprite2D = tree.get_node("Sprite2D")
-	var tween := create_tween()
-	tween.tween_property(sprite, "modulate", Color(1, 1, 1, 0.2), 0.15)
-	tween.tween_property(sprite, "modulate", Color(1, 1, 1, 1.0), 0.15)
 
 func water_use() -> void:
 	var layers = get_tree().current_scene.get_node("Layers")

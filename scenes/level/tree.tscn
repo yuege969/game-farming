@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://c4nvxvw1wr0ja" path="res://graphics/tilesets/trees.png" id="1_eqwtg"]
 [ext_resource type="Script" uid="uid://dr2rg1p6polab" path="res://scenes/level/tree.gd" id="1_gk3pd"]
+[ext_resource type="Material" path="res://scenes/level/flash_material.tres" id="1_material"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_p0c4k"]
 size = Vector2(14, 18)
@@ -12,6 +13,7 @@ collision_mask = 2
 script = ExtResource("1_gk3pd")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=262468575]
+material = ExtResource("1_material")
 texture = ExtResource("1_eqwtg")
 hframes = 2
 
