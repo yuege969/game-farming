@@ -37,7 +37,7 @@ func _handle_plant(seed_name: String, target_world_pos: Vector2) -> void:
 		return
 
 	var plant: StaticBody2D = PlantScene.instantiate()
-	plant.position = _tile_to_world(coords)
+	plant.position = _tile_to_world(coords) + Vector2(8, -2)
 	_objects.add_child(plant)
 	plant.setup(seed_name)
 
