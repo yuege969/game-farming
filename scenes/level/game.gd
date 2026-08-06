@@ -74,6 +74,7 @@ func _handle_axe(target_world_pos: Vector2) -> void:
 		var body: Node2D = result.collider
 		if body.is_in_group("Trees"):
 			body.flash()
+			_player.play_axe_hit_sound()
 			break
 
 func _handle_hoe(target_world_pos: Vector2) -> void:

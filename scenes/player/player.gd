@@ -141,8 +141,11 @@ func _tool_target_pos() -> Vector2:
 
 ## Called by animation method track — emits signal for game.gd to handle
 func axe_use() -> void:
-	_axe_sound.play()
 	tool_action.emit("axe", _tool_target_pos())
+
+## Called by game.gd when axe actually hits a tree
+func play_axe_hit_sound() -> void:
+	_axe_sound.play()
 
 ## Called by animation method track — emits signal for game.gd to handle
 func water_use() -> void:
