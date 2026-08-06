@@ -6,13 +6,13 @@ const TEXTURES := {
 	"tomatoes": "res://graphics/plants/tomatoes.png",
 }
 
-const GROWTH_INTERVAL := 5.0
-const MAX_STAGE := 3
+@export var growth_days_per_stage: int = 1
+@export var max_stage: int = 3
 
 var crop_type: String = ""
 var growth_stage: int = 0
 var is_watered: bool = false
-var _growth_timer: Timer
+var _watered_day: int = -1
 
 
 func setup(crop_name: String) -> void:
@@ -40,21 +40,26 @@ func water() -> void:
 		return
 
 	is_watered = true
-	_start_growth_timer()
+	_watered_day = TimeManager.day
+
+	if not TimeManager.day_changed.is_connected(_on_day_changed):
+		TimeManager.day_changed.connect(_on_day_changed)
 
 
-func _start_growth_timer() -> void:
-	_growth_timer = Timer.new()
-	_growth_timer.wait_time = GROWTH_INTERVAL
-	_growth_timer.timeout.connect(_on_growth_tick)
-	_growth_timer.one_shot = false
-	add_child(_growth_timer)
-	_growth_timer.start()
+func _on_day_changed(_new_day: int) -> void:
+	if not is_watered:
+		return
+
+	var days_passed := TimeManager.day - _watered_day
+	if days_passed >= growth_days_per_stage:
+		growth_stage += 1
+		$Sprite2D.frame = growth_stage
+		is_watered = false
+
+		if growth_stage >= max_stage:
+			_disconnect_time()
 
 
-func _on_growth_tick() -> void:
-	growth_stage += 1
-	$Sprite2D.frame = growth_stage
-
-	if growth_stage >= MAX_STAGE:
-		_growth_timer.stop()
+func _disconnect_time() -> void:
+	if TimeManager.day_changed.is_connected(_on_day_changed):
+		TimeManager.day_changed.disconnect(_on_day_changed)
