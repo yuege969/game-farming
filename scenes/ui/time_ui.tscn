@@ -12,16 +12,12 @@ theme_override_constants/margin_right = 20
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=178431003]
 
-[node name="Control" type="Control" parent="MarginContainer/HBoxContainer" unique_id=178431004]
-size_flags_horizontal = 3
-
 [node name="TimeLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=178431005]
 text = "Day 1 · 06:00"
 horizontal_alignment = 1
-
-[node name="Control" type="Control" parent="MarginContainer/HBoxContainer" unique_id=178431006]
 size_flags_horizontal = 3
 
 [node name="SpeedLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=178431007]
 text = "[▶ 1x]"
 horizontal_alignment = 2
+custom_minimum_size = Vector2(100, 0)
