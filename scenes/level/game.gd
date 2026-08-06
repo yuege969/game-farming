@@ -91,16 +91,14 @@ func _handle_water(target_world_pos: Vector2) -> void:
 	if _soil_layer.get_cell_source_id(coords) == -1:
 		return
 
-	# Don't double-water — soil_water already present
-	if _soil_water_layer.get_cell_source_id(coords) != -1:
-		return
+	var already_wet := _soil_water_layer.get_cell_source_id(coords) != -1
+	if not already_wet:
+		# Erase the soil tile and replace with soil_water
+		_soil_layer.erase_cell(coords)
 
-	# Erase the soil tile and replace with soil_water
-	_soil_layer.erase_cell(coords)
-
-	# Random atlas x (0, 1, or 2) for visual variety
-	var atlas_x := randi() % 3
-	_soil_water_layer.set_cell(coords, 0, Vector2i(atlas_x, 0))
+		# Random atlas x (0, 1, or 2) for visual variety
+		var atlas_x := randi() % 3
+		_soil_water_layer.set_cell(coords, 0, Vector2i(atlas_x, 0))
 
 	# Track watering time for drying
 	_watered_tiles[coords] = TimeManager.total_hours
