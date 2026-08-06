@@ -1116,3 +1116,7 @@ parameters/OneShot/request = 0
 top_level = true
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1993177679]
+limit_left = 31
+limit_top = 0
+limit_right = 992
+limit_bottom = 480

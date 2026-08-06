@@ -108,6 +108,7 @@ func _handle_water(target_world_pos: Vector2) -> void:
 	if not already_wet:
 		# Erase the soil tile and replace with soil_water
 		_soil_layer.erase_cell(coords)
+		_update_soil_terrain_neighbors(coords)
 
 		# Random atlas x (0, 1, or 2) for visual variety
 		var atlas_x := randi() % 3
@@ -141,7 +142,22 @@ func _on_time_changed(_day: int, _hour: int, _minute: int) -> void:
 			to_revert.append(coords)
 	for coords in to_revert:
 		_soil_layer.erase_cell(coords)
+		_update_soil_terrain_neighbors(coords)
 		_soil_idle.erase(coords)
+
+
+func _update_soil_terrain_neighbors(coords: Vector2i) -> void:
+	var directions := [
+		Vector2i(0, -1),
+		Vector2i(0, 1),
+		Vector2i(-1, 0),
+		Vector2i(1, 0),
+	]
+	for dir: Vector2i in directions:
+		var neighbor := coords + dir
+		if _soil_layer.get_cell_source_id(neighbor) != -1:
+			_soil_layer.erase_cell(neighbor)
+			_soil_layer.set_cells_terrain_connect([neighbor], 0, 0)
 
 
 func _revert_to_soil(coords: Vector2i) -> void:
