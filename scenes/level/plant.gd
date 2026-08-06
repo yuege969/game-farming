@@ -36,7 +36,7 @@ func setup(crop_name: String) -> void:
 
 
 func water() -> void:
-	if is_watered:
+	if is_watered or growth_stage >= max_stage:
 		return
 
 	is_watered = true
