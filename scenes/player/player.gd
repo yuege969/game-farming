@@ -125,14 +125,6 @@ func _switch_tool() -> void:
 
 func _start_tool_action() -> void:
 	var tool_name = tools[current_tool_idx]
-	# Play tool sound
-	match tool_name:
-		"axe":
-			_axe_sound.play()
-		"hoe":
-			_hoe_sound.play()
-		"water":
-			_water_sound.play()
 	# Ensure ToolStateMachine is in the correct tool state (not Start/End)
 	var tool_playback: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/ToolStateMachine/playback")
 	tool_playback.travel(tool_name)
@@ -149,12 +141,15 @@ func _tool_target_pos() -> Vector2:
 
 ## Called by animation method track — emits signal for game.gd to handle
 func axe_use() -> void:
+	_axe_sound.play()
 	tool_action.emit("axe", _tool_target_pos())
 
 ## Called by animation method track — emits signal for game.gd to handle
 func water_use() -> void:
+	_water_sound.play()
 	tool_action.emit("water", _tool_target_pos())
 
 ## Called by animation method track — emits signal for game.gd to handle
 func hoe_use() -> void:
+	_hoe_sound.play()
 	tool_action.emit("hoe", _tool_target_pos())
