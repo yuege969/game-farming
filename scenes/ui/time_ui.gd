@@ -1,7 +1,8 @@
 extends CanvasLayer
 
-@onready var _time_label: Label = $MarginContainer/HBoxContainer/TimeLabel
-@onready var _speed_label: Label = $MarginContainer/HBoxContainer/SpeedLabel
+@onready var _panel: Panel = $Panel
+@onready var _time_label: Label = $Panel/HBoxContainer/TimeLabel
+@onready var _speed_label: Label = $Panel/HBoxContainer/SpeedLabel
 
 
 func _ready() -> void:
@@ -11,6 +12,12 @@ func _ready() -> void:
 	_time_label.add_theme_font_size_override(&"font_size", 12)
 	_speed_label.add_theme_font_size_override(&"font_size", 12)
 	_refresh_display()
+	_center_panel()
+
+
+func _center_panel() -> void:
+	var viewport_size := get_viewport().get_visible_rect().size
+	_panel.position.x = (viewport_size.x - _panel.size.x) / 2.0
 
 
 func _process(_delta: float) -> void:
@@ -34,10 +41,13 @@ func _on_time_changed(day: int, hour: int, minute: int) -> void:
 	var minute_str := "%02d" % minute
 	var icon := "☀️" if hour >= 7 and hour < 19 else "🌙"
 	_time_label.text = "%s Day %d · %s:%s" % [icon, day, hour_str, minute_str]
+	# Re-center after text changes (width may change)
+	_center_panel.call_deferred()
 
 
 func _on_speed_changed(_speed_index: int) -> void:
 	_refresh_display()
+	_center_panel.call_deferred()
 
 
 func _refresh_display() -> void:
