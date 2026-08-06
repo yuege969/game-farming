@@ -7,7 +7,10 @@ const PlantScene := preload("res://scenes/level/plant.tscn")
 @export var tile_world_offset := Vector2(8, -2)
 
 ## Game hours until watered soil dries back to regular soil.
-@export var soil_dry_hours: float = 12.0
+@export var soil_dry_hours: float = 6.0
+
+## Game hours until idle dry soil reverts to grass.
+@export var soil_revert_hours: float = 12.0
 
 @onready var _grass_layer: TileMapLayer = $Layers/GrassLayer
 @onready var _soil_layer: TileMapLayer = $Layers/SoilLayer
@@ -17,6 +20,7 @@ const PlantScene := preload("res://scenes/level/plant.tscn")
 @onready var _player: CharacterBody2D = $Objects/Player
 
 var _watered_tiles: Dictionary = {}
+var _soil_idle: Dictionary = {}
 
 func _ready() -> void:
 	_player.tool_action.connect(_on_tool_action)
@@ -51,6 +55,12 @@ func _handle_plant(seed_name: String, target_world_pos: Vector2) -> void:
 	_objects.add_child(plant)
 	plant.setup(seed_name)
 
+	# Soil is now occupied — pause idle timer
+	_soil_idle.erase(coords)
+
+	# Connect harvest signal
+	plant.harvested.connect(_on_crop_harvested)
+
 func _handle_axe(target_world_pos: Vector2) -> void:
 	var space_state := get_world_2d().direct_space_state
 	var query := PhysicsPointQueryParameters2D.new()
@@ -84,6 +94,9 @@ func _handle_hoe(target_world_pos: Vector2) -> void:
 	# Place soil tile with terrain auto-connect (terrain_set=0, terrain=0)
 	_soil_layer.set_cells_terrain_connect([coords], 0, 0)
 
+	# Track idle start time for auto-revert to grass
+	_soil_idle[coords] = TimeManager.total_hours
+
 func _handle_water(target_world_pos: Vector2) -> void:
 	var coords := _world_to_tile(target_world_pos)
 
@@ -110,6 +123,8 @@ func _handle_water(target_world_pos: Vector2) -> void:
 
 func _on_time_changed(_day: int, _hour: int, _minute: int) -> void:
 	var current_hours := TimeManager.total_hours
+
+	# Wet soil → dry soil
 	var to_dry: Array[Vector2i] = []
 	for coords in _watered_tiles:
 		var watered_at: float = _watered_tiles[coords]
@@ -118,11 +133,34 @@ func _on_time_changed(_day: int, _hour: int, _minute: int) -> void:
 	for coords in to_dry:
 		_revert_to_soil(coords)
 
+	# Idle dry soil → grass
+	var to_revert: Array[Vector2i] = []
+	for coords in _soil_idle:
+		var idle_since: float = _soil_idle[coords]
+		if (current_hours - idle_since) >= soil_revert_hours:
+			to_revert.append(coords)
+	for coords in to_revert:
+		_soil_layer.erase_cell(coords)
+		_soil_idle.erase(coords)
+
 
 func _revert_to_soil(coords: Vector2i) -> void:
 	_soil_water_layer.erase_cell(coords)
 	_soil_layer.set_cells_terrain_connect([coords], 0, 0)
 	_watered_tiles.erase(coords)
+
+	# If no plant on this tile, start idle timer for auto-revert to grass
+	if _plant_at_tile(coords) == null:
+		_soil_idle[coords] = TimeManager.total_hours
+
+
+func _on_crop_harvested(world_pos: Vector2) -> void:
+	var coords := _world_to_tile(world_pos - tile_world_offset)
+
+	# If soil is dry (not soil_water), start idle timer for auto-revert
+	if _soil_water_layer.get_cell_source_id(coords) == -1:
+		_soil_idle[coords] = TimeManager.total_hours
+	# If soil is wet, idle timer starts in _revert_to_soil after drying
 
 func _world_to_tile(world_pos: Vector2) -> Vector2i:
 	var local_pos := _soil_layer.to_local(world_pos)

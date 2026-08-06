@@ -1,5 +1,7 @@
 extends StaticBody2D
 
+signal harvested(world_pos: Vector2)
+
 const TEXTURES := {
 	"corn": "res://graphics/plants/corn.png",
 	"pumpkin": "res://graphics/plants/pumpkin.png",
@@ -13,6 +15,10 @@ var crop_type: String = ""
 var growth_stage: int = 0
 var is_watered: bool = false
 var _watered_day: int = -1
+
+
+func _ready() -> void:
+	$Area2D.body_entered.connect(_on_body_entered)
 
 
 func setup(crop_name: String) -> void:
@@ -63,3 +69,12 @@ func _on_day_changed(_new_day: int) -> void:
 func _disconnect_time() -> void:
 	if TimeManager.day_changed.is_connected(_on_day_changed):
 		TimeManager.day_changed.disconnect(_on_day_changed)
+
+
+func _on_body_entered(body: Node2D) -> void:
+	if not body.name == "Player":
+		return
+	if growth_stage < max_stage:
+		return
+	harvested.emit(global_position)
+	queue_free()
