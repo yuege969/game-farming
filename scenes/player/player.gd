@@ -14,6 +14,15 @@ signal plant_action(seed_name: String, target_world_pos: Vector2)
 
 @onready var animation_tree: AnimationTree = $AnimationTree
 
+@onready var _axe_sound: AudioStreamPlayer2D = $Sounds/AxeSound
+@onready var _hoe_sound: AudioStreamPlayer2D = $Sounds/HoeSound
+@onready var _water_sound: AudioStreamPlayer2D = $Sounds/WaterSound
+@onready var _step_sound: AudioStreamPlayer2D = $Sounds/StepSound
+@onready var _bgm: AudioStreamPlayer2D = $Sounds/BackgroundSound
+
+const STEP_INTERVAL: float = 0.35
+var _step_timer: float = 0.0
+
 var last_direction: Vector2 = Vector2.DOWN
 var current_state: String = "idle"
 
@@ -29,6 +38,10 @@ var _one_shot_was_active: bool = false
 func _ready() -> void:
 	# Initialize ToolStateMachine to default tool (hoe)
 	_switch_tool()
+	# Start background music looping
+	_bgm.play()
+	# music.mp3 import has loop disabled, so loop manually via finished signal
+	_bgm.finished.connect(_bgm.play)
 
 func _physics_process(_delta: float) -> void:
 	# --- Tool switching input (only when not using a tool) ---
@@ -55,6 +68,7 @@ func _physics_process(_delta: float) -> void:
 	# --- Movement (locked during tool use) ---
 	if is_using_tool:
 		velocity = Vector2.ZERO
+		_step_timer = 0.0
 		# Continuously update tool blend position during animation
 		var tool_name = tools[current_tool_idx]
 		var tool_blend_path = "parameters/ToolStateMachine/%s/blend_position" % tool_name
@@ -73,8 +87,14 @@ func _physics_process(_delta: float) -> void:
 			raw_direction = raw_direction.normalized()
 			direction.x = round(raw_direction.x)
 			direction.y = round(raw_direction.y)
+			# Step sound timer — play on interval while moving
+			_step_timer += _delta
+			if _step_timer >= STEP_INTERVAL:
+				_step_sound.play()
+				_step_timer = 0.0
 		else:
 			direction = Vector2.ZERO
+			_step_timer = 0.0   # reset so next walk starts fresh
 
 		# Update blend positions for 8-directional animation
 		if direction != Vector2.ZERO:
@@ -105,6 +125,14 @@ func _switch_tool() -> void:
 
 func _start_tool_action() -> void:
 	var tool_name = tools[current_tool_idx]
+	# Play tool sound
+	match tool_name:
+		"axe":
+			_axe_sound.play()
+		"hoe":
+			_hoe_sound.play()
+		"water":
+			_water_sound.play()
 	# Ensure ToolStateMachine is in the correct tool state (not Start/End)
 	var tool_playback: AnimationNodeStateMachinePlayback = animation_tree.get("parameters/ToolStateMachine/playback")
 	tool_playback.travel(tool_name)
