@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://brjtwue1yusbe"]
+
+[ext_resource type="Script" uid="uid://cqltir78cv7ce" path="res://scenes/ui/time_ui.gd" id="1_time"]
+
+[node name="CanvasLayer" type="CanvasLayer" unique_id=178431001]
+script = ExtResource("1_time")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=178431002]
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 20
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=178431003]
+
+[node name="Control" type="Control" parent="MarginContainer/HBoxContainer" unique_id=178431004]
+size_flags_horizontal = 3
+
+[node name="TimeLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=178431005]
+text = "Day 1 · 06:00"
+horizontal_alignment = 1
+
+[node name="Control" type="Control" parent="MarginContainer/HBoxContainer" unique_id=178431006]
+size_flags_horizontal = 3
+
+[node name="SpeedLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=178431007]
+text = "[▶ 1x]"
+horizontal_alignment = 2

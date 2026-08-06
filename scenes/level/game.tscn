@@ -8,6 +8,8 @@
 [ext_resource type="Texture2D" uid="uid://dcwcdle3cjkv6" path="res://graphics/tilesets/hills.png" id="4_fq6ga"]
 [ext_resource type="Texture2D" uid="uid://byfag0kgqavgo" path="res://graphics/tilesets/soil_water.png" id="5_f2w0s"]
 [ext_resource type="PackedScene" uid="uid://yp0qilyb1dyd" path="res://scenes/level/tree.tscn" id="5_qrcxb"]
+[ext_resource type="Script" uid="uid://dr85m2xhvoil3" path="res://scenes/level/day_night_modulate.gd" id="6_dnmod"]
+[ext_resource type="PackedScene" uid="uid://brjtwue1yusbe" path="res://scenes/ui/time_ui.tscn" id="7_tmui"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qrcxb"]
 texture = ExtResource("1_qhoho")
@@ -853,6 +855,9 @@ sources/0 = SubResource("TileSetAtlasSource_3ny2s")
 script = ExtResource("1_3ny2s")
 tile_world_offset = Vector2(0, -12)
 
+[node name="DayNightModulate" type="CanvasModulate" parent="."]
+script = ExtResource("6_dnmod")
+
 [node name="Layers" type="Node2D" parent="." unique_id=658813167]
 
 [node name="WaterLayer" type="TileMapLayer" parent="Layers" unique_id=1232258155]
@@ -935,3 +940,5 @@ position = Vector2(699, 411)
 
 [node name="Tree19" parent="Objects" unique_id=733658536 instance=ExtResource("5_qrcxb")]
 position = Vector2(824, 220)
+
+[node name="TimeUI" parent="." instance=ExtResource("7_tmui")]

@@ -6,6 +6,9 @@ const PlantScene := preload("res://scenes/level/plant.tscn")
 ## so they visually align with the soil tile sprite.
 @export var tile_world_offset := Vector2(8, -2)
 
+## Game hours until watered soil dries back to regular soil.
+@export var soil_dry_hours: float = 12.0
+
 @onready var _grass_layer: TileMapLayer = $Layers/GrassLayer
 @onready var _soil_layer: TileMapLayer = $Layers/SoilLayer
 @onready var _water_layer: TileMapLayer = $Layers/WaterLayer
@@ -13,9 +16,12 @@ const PlantScene := preload("res://scenes/level/plant.tscn")
 @onready var _objects: Node2D = $Objects
 @onready var _player: CharacterBody2D = $Objects/Player
 
+var _watered_tiles: Dictionary = {}
+
 func _ready() -> void:
 	_player.tool_action.connect(_on_tool_action)
 	_player.plant_action.connect(_on_plant_action)
+	TimeManager.time_changed.connect(_on_time_changed)
 
 func _on_tool_action(tool_name: String, target_world_pos: Vector2) -> void:
 	match tool_name:
@@ -85,21 +91,38 @@ func _handle_water(target_world_pos: Vector2) -> void:
 	if _soil_layer.get_cell_source_id(coords) == -1:
 		return
 
-	# Don't double-water — soil_water already present
-	if _soil_water_layer.get_cell_source_id(coords) != -1:
-		return
+	var already_wet := _soil_water_layer.get_cell_source_id(coords) != -1
+	if not already_wet:
+		# Erase the soil tile and replace with soil_water
+		_soil_layer.erase_cell(coords)
 
-	# Erase the soil tile and replace with soil_water
-	_soil_layer.erase_cell(coords)
+		# Random atlas x (0, 1, or 2) for visual variety
+		var atlas_x := randi() % 3
+		_soil_water_layer.set_cell(coords, 0, Vector2i(atlas_x, 0))
 
-	# Random atlas x (0, 1, or 2) for visual variety
-	var atlas_x := randi() % 3
-	_soil_water_layer.set_cell(coords, 0, Vector2i(atlas_x, 0))
+	# Track watering time for drying
+	_watered_tiles[coords] = TimeManager.total_hours
 
 	# Trigger plant growth if a plant exists at this tile
 	var plant := _plant_at_tile(coords)
 	if plant != null:
 		plant.water()
+
+func _on_time_changed(_day: int, _hour: int, _minute: int) -> void:
+	var current_hours := TimeManager.total_hours
+	var to_dry: Array[Vector2i] = []
+	for coords in _watered_tiles:
+		var watered_at: float = _watered_tiles[coords]
+		if (current_hours - watered_at) >= soil_dry_hours:
+			to_dry.append(coords)
+	for coords in to_dry:
+		_revert_to_soil(coords)
+
+
+func _revert_to_soil(coords: Vector2i) -> void:
+	_soil_water_layer.erase_cell(coords)
+	_soil_layer.set_cells_terrain_connect([coords], 0, 0)
+	_watered_tiles.erase(coords)
 
 func _world_to_tile(world_pos: Vector2) -> Vector2i:
 	var local_pos := _soil_layer.to_local(world_pos)
