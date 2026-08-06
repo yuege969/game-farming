@@ -7,6 +7,9 @@ extends CanvasLayer
 func _ready() -> void:
 	TimeManager.time_changed.connect(_on_time_changed)
 	TimeManager.speed_changed.connect(_on_speed_changed)
+	# Ensure font size is applied at runtime
+	_time_label.add_theme_font_size_override(&"font_size", 12)
+	_speed_label.add_theme_font_size_override(&"font_size", 12)
 	_refresh_display()
 
 
